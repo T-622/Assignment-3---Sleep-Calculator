@@ -64,81 +64,89 @@ name = ""
 current = [0,0,0] # Current Date As Array Instead Of 3 Vars
 birth = [0,0,0]   # Birth Date As Array Instead Of 3 Vars
 
-daysOld = 0
-numLeapYears = 0
-d1 = 0
+daysOld = 0       # Variable Storing How Old The User Is
+numLeapYears = 0  # Variable To Store How Many Leap Years The User Has Endured
+
+d1 = 0            # Temporary Variables To Store User's dates
 d2 = 0
+
 weeklyHours = 0 # Hours Slept During Week
 endlyHours = 0  # Hours Slept During Weekend
 
 weekDays = 0    # Number Of Weekdays
 endDays = 0     # Number Of Weekends
 
-totalHours = 0
+totalHours = 0  # Total Slept Hours
 
-totalWeek = 0
-totalEnd = 0
+totalWeek = 0  # Total Hours On Week
+totalEnd = 0   # Total Hours On Weekend 
 
-ageBreakdown = [0,0,0,0,0,0] # Array to Store YY/MM/DD/HH/MM/SS
+ageBreakdown = [0,0,0,0,0,0] # Array to Store YY/MM/DD/HH/MM/SS BrokenDown Time (PrettyPrint)
 
 today = date.today() # Define Current Date
 
-def playAgain():
-  while True:
-    try:
+def playAgain():     # Function Prompting User To Play Again Or Not (Error-trapping)
+  
+  while True:        # Trap User In Loop To Enter Choice Until Proper Data Is Recieved
+    
+    try:             # Try To Gain Input   
       choice = input(BLUE+"\nWould You Like To Play Again? 'y' To Continue, And 'n' To Exit: "+RESET)
-    except ValueError:
+    except ValueError:  
       print(RED+"\nInvalid Choice!"+RESET)
-    else:
-      if (choice in ""):
+    else:                         # If Input Doesn't Raise 'ValueError'
+      if (choice in ""):          # If 'ENTER' key is used
         print(RED+"\nInvalid Choice!"+RESET)
-      elif(choice not in "yYnN"):
+      elif(choice not in "yYnN"): # If No Y Or N Is Recieved (Improper Charecter) 
         print(RED+"\nInvalid Choice!"+RESET)
-      elif (choice in "yY"):
-        print("")
+      elif (choice in "yY"):      # If 'Y' Recieved, Return True
         return True
-      elif (choice in "nN"):
+      elif (choice in "nN"):      # If 'N' Recieved, Return False And Thank User
         print(GREEN+"\nThanks For Playing!"+RESET)
         return False
 
-def getBirthDate():
-  global birth
+def getBirthDate():    # Function Attempting To Gain The User's Valid Birthdate
+  
+  global birth         # Declare Birthdate Array As Global, As It's Used Elsewhere As Well
 
-  while True:
+  while True:          # Error-trapped Gaining Of Birth Year (1-2099)
     try:
-      birth[0] = int(input(BLUE+"What's Your Birth Year (YY): "+RESET))
+      birth[0] = int(input(BLUE+"What's Your Birth Year (YY): "+RESET))  # Check Birth Year And Store It In Index0 Of Array
     except ValueError:
       print(RED+"\nYou Didn't Enter A Valid Month!"+RESET) 
-    if (birth[0] <= 0):
+    if (birth[0] <= 0):                                                  # Can't Have Negative Years, Or 0 Years
       print(RED+"\nToo Low Year"+RESET)
-    elif (birth[0] > 2100):
+    elif (birth[0] > 2100):                                              # Put A Cap On The Max Year For Birth
       print(RED+"\nYear too Large"+RESET)
+    elif (birth[0] > today.year):
+      print(RED+"\nYou Can't Be Born In The Future!"+RESET)
     else:
-      break
+      break                                                              # Continue Logic On Valid Input, Not Caught In Error-Filter
   
-  while True:
+  while True:    # Error-Trapped Gaining Of Birth Month
     try:
-      birth[2] = int(input(BLUE+"What's Your Birth Month (MM): "+RESET))
+      birth[2] = int(input(BLUE+"What's Your Birth Month (MM): "+RESET))  # Check Birth Month And Store it In Index1 Of Array
     except ValueError:
-      print(RED+"\nYou Didn't Enter A Valid Month!"+RED) 
-    if (birth[2] > 12):
+      print(RED+"\nYou Didn't Enter A Valid Month!"+RED)     
+    if (birth[2] > 12):                                                   # Can't Have More Than 12 Months
       print(RED+"\nThere Aren't More Than 31 Days In A Month!"+RESET)
-    elif (birth[2] <= 0):
+    elif (birth[2] <= 0):                                                 # Can't Have Less Than 0 Months Or 0 Months
       print(RED+"\nValue Too Small!"+RESET)
     else:
       break
 
-  while True:
+  while True:                                                             # Error-Trapped Gaining Of Birthdate
     try:
       birth[1] = int(input(BLUE+"\nWhat's Your Birthday (DD): "+RESET))
     except ValueError:
       print(RED+"\nYou Didn't Enter A Valid Day!"+RESET) 
-    if (birth[1] > 31):
+    if (birth[1] > 31):                                                   # Raise Error When Day Is Greater Than 31 (>31); No Month With 32 Days
       print(RED+"\nThere Aren't More Than 31 Days In A Month!"+RESET)
-    elif (birth[1] <= 0):
+    elif (birth[1] <= 0):                                                 # Can't Have Too Low Of A Value
       print(RED+"\nValue Too Small!"+RESET)
     else:
+      
       if(birth[0]%4 != 0):                                    # If Not A Leap Year
+        
         if(birth[2] in [1,3,5,7,8,10,12] and birth[1] > 31):  # If A 31 Day-Month, Don't Accecpt Larger Than 31 Days
           print(RED+"\nBad Day!"+RESET)
         elif (birth[2] in [4,6,9,11] and birth[1] > 30):      # If A 30 Day-Month, Don't Accecpt Larger Than 30 Days
@@ -147,50 +155,53 @@ def getBirthDate():
           print(RED+"\nBad Day!"+RESET)
         else:
           break
-      
       elif(birth[0]%4 == 0 and birth[0]%100 != 0) or (birth[0]%400 == 0):  # If A Leap Year
         if(birth[2] in [1,3,5,7,8,10,12] and birth[1] > 31):               # If A 31-Day Month, Don't Accecpt Larger Than 31 Days
           print(RED+"\nBad Day!"+RESET)
         elif (birth[2] in [4,6,9,11] and birth[1] > 30):                   # If A 30-Day Month, Don't Accecpt Larger Than 30 Days
           print(RED+"\nBad Day!"+RESET)
-        elif (birth[2] == 2 and birth[1] > 29):                            # If A 29-Day Month, Don't Accecpt Larger Than 29 Days
+        elif (birth[2] == 2 and birth[1] > 29):                            # If A 29-Day Month, Don't Accecpt Larger Than 29 Days (Feb)
           print(RED+"\nBad Day!"+RESET)
         else:
           break
     
-  print(MAGENTA+"\nEntered Date! (DD/MM/YYYY):",birth[1],"/",birth[2],"/",birth[0],""+RESET)
+  print(MAGENTA+"\nEntered Date! (DD/MM/YYYY):",birth[1],"/",birth[2],"/",birth[0],""+RESET)  # Print The User's Entered Date
 
-def getCurrentDate():
+def getCurrentDate():    # Function To Gain User's Input For Current Date, While Error Trapping Accecptable YY, MM, And DD Values
   global current
+  
   while True: 
-    try:
+    
+    try:                 # Try To Gain User's Selection Of Using Automatic Date Or Manually Enter It
       currentDate = input(BLUE+"\nUse Current Date? 'y' To Continue, Or 'n' To Manually Enter Date: "+RESET)
     except ValueError:
       print(RED+"\nI Need A Definitive Answer!"+RESET)
     else:
-      if (currentDate in ""):
+      
+      if (currentDate in ""):                              # Error-Trap Enter Key
         print(RED+"\nI Need A Definitive Answer!"+RESET)
-      elif (currentDate not in "yYnY"):
+      elif (currentDate not in "yYnY"):                    # Error-Trap Invalid Charecter
         print(RED+"\nInvalid Answer"+RESET)
-      elif (currentDate in "yY"):
+      elif (currentDate in "yY"):                          # Accecpt 'y or Y', and CurrentDate Array Has YY/DD/MM Stored In Index 0,1,2
         current[0] = today.year
         current[1] = today.day
         current[2] = today.month
-        break
+        break                                              # Don't Continue Prompting User For Date, It Has Been Calculated Already 
       else:
-        while True:
+              
+        while True:                                       # Trap User In Infinite Loop For Input For Year Value (YY)               
           try:
-            current[1] = int(input(BLUE+"\nWhat's Today's Day (DD): "+RESET))
+            current[0] = int(input(BLUE+"What's Today's Year (YY): "+RESET))
           except ValueError:
-            print(RED+"\nYou Didn't Enter A Valid Day!"+RESET) 
-          if (current[1] > 31):
-            print(RED+"\nThere Aren't More Than 31 Days In A Month!"+RESET)
-          elif (current[1] <= 0):
-            print(RED+"\nValue Too Small!"+RESET)
+            print(RED+"\nYou Didn't Enter A Valid Month!"+RESET) 
+          if (current[0] <= 0):                           # Self-Explanatory, No Year Smaller Than Or Equal To 0
+            print(RED+"\nCan't Have Year 0 Or Less"+RESET)
+          elif (current[0] < birth[0]):                   # Can't Have A Year Smaller Than Birth Year
+            print(RED+"\nCan't have A Year Smaller Than Your Birth Year!"+RESET)
           else:
-            break
+            break  
       
-        while True:
+        while True:                                       # Trap User In Infinite Loop For Input For Month Value (MM)
           try:
             current[2] = int(input(BLUE+"What's Today's Month (MM): "+RESET))
           except ValueError:
@@ -201,24 +212,47 @@ def getCurrentDate():
             print(RED+"\nValue Too Small!"+RESET)
           else:
             break
-      
-        while True:
+    
+        while True:                                        # Trap User In Infinite Loop For Input For Day Value (DD)
           try:
-            current[0] = int(input(BLUE+"What's Today's Year (YY): "+RESET))
+            current[1] = int(input(BLUE+"\nWhat's Today's Day (DD): "+RESET))
           except ValueError:
-            print(RED+"\nYou Didn't Enter A Valid Month!"+RESET) 
-          if (current[0] <= 0):
-            print(RED+"\nCan't Have Year 0 Or Less"+RESET)
-          elif (current[0] < birth[0]):
-            print(RED+"\nCan't have A Year Smaller Than Your Birth Year!"+RESET)
+            print(RED+"\nYou Didn't Enter A Valid Day!"+RESET) 
+          if (current[1] > 31):                            # No More Than 31 Days In A Month Maximum
+            print(RED+"\nThere Aren't More Than 31 Days In A Month!"+RESET)
+          elif (current[1] <= 0):                          # No Less Than 1 Day In A Month
+            print(RED+"\nValue Too Small!"+RESET)
           else:
-            break
-  print(MAGENTA+"\nCurrent Date! (DD/MM/YYYY):",current[1],"/",current[2],"/",current[0])
 
-def getDiff(date1, date2):
+            if(current[0]%4 != 0):                                    # If Not A Leap Year
+              
+              if(current[2] in [1,3,5,7,8,10,12] and current[1] > 31):  # If A 31 Day-Month, Don't Accecpt Larger Than 31 Days
+                print(RED+"\nBad Day!"+RESET)
+              elif (current[2] in [4,6,9,11] and current[1] > 30):      # If A 30 Day-Month, Don't Accecpt Larger Than 30 Days
+                print(RED+"\nBad Day!"+RESET)
+              elif (current[2] == 2 and current[1] > 28):               # If A 28 Day Month (Non-Leap), Don't Accecpt Larger Than 28 Days
+                print(RED+"\nBad Day!"+RESET)
+              else:
+                return
+                
+            elif(current[0]%4 == 0 and current[0]%100 != 0) or (current[0]%400 == 0):  # If A Leap Year
+              if(current[2] in [1,3,5,7,8,10,12] and current[1] > 31):                 # If A 31-Day Month, Don't Accecpt Larger Than 31 Days
+                print(RED+"\nBad Day!"+RESET)
+              elif (current[2] in [4,6,9,11] and current[1] > 30):                     # If A 30-Day Month, Don't Accecpt Larger Than 30 Days
+                print(RED+"\nBad Day!"+RESET)
+              elif (current[2] == 2 and current[1] > 29):                              # If A 29-Day Month, Don't Accecpt Larger Than 29 Days (Feb)
+                print(RED+"\nBad Day!"+RESET)
+              else:
+                return
+            
+            
+  print(MAGENTA+"\nCurrent Date! (DD/MM/YYYY):",current[1],"/",current[2],"/",current[0])  # Print Current Used Date (Current Day)
+
+def getDiff(date1, date2):  # Function To Return Time Delta In Days From 2 DateTime Objects (date1, date2)
   delta = date1 - date2
   return delta.days
-def getInformation():
+
+def getInformation():       # Properly Error-Trapped Function To Gain User Info
   global birth
   global current
   global name
