@@ -27,8 +27,10 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 
 import time
+import os
 import math
 import numpy as np
+from SleepScore import *
 from datetime import datetime
 from datetime import date
 
@@ -85,10 +87,28 @@ ageBreakdown = [0,0,0,0,0,0] # Array to Store YY/MM/DD/HH/MM/SS BrokenDown Time 
 
 today = date.today() # Define Current Date
 
-def playAgain():     # Function Prompting User To Play Again Or Not (Error-trapping)
-  
+
+
+def intro():
+  '''
+    Function That Prints A Text Array That Appears As An ASCII Banner
+  '''
+  print("  _____ _                    _____      _            _       _               ")
+  print(" / ____| |                  / ____|    | |          | |     | |              ")
+  print("| (___ | | ___  ___ _ __   | |     __ _| | ___ _   _| | __ _| |_ ___  _ __   ")
+  print(" \___ \| |/ _ \/ _ | '_ \  | |    / _` | |/ __| | | | |/ _` | __/ _ \| '__|  ")
+  print(" ____) | |  __|  __| |_) | | |___| (_| | | (__| |_| | | (_| | || (_) | |     ")
+  print("|_____/|_|\___|\___| .__/   \_____\__,_|_|\___|\__,_|_|\__,_|\__\___/|_|     ")
+  print("                  | |                                                        ")
+  print("                  |_|                                                        ")
+  print("                              By: Tyler Peppy                                ")
+  time.sleep(2.5)
+  os.system('clear')
+def playAgain():     
+  '''
+    Function Prompting User To Play Again Or Not (Error-trapping)
+  '''
   while True:        # Trap User In Loop To Enter Choice Until Proper Data Is Recieved
-    
     try:             # Try To Gain Input   
       choice = input(BLUE+"\nWould You Like To Play Again? 'y' To Continue, And 'n' To Exit: "+RESET)
     except ValueError:  
@@ -104,22 +124,46 @@ def playAgain():     # Function Prompting User To Play Again Or Not (Error-trapp
         print(GREEN+"\nThanks For Playing!"+RESET)
         return False
 
-def getBirthDate():    # Function Attempting To Gain The User's Valid Birthdate
+def getBirthDate():  
+  '''
+    Function Attempting To Gain The User's Valid Birthdate
+  '''
   
   global birth         # Declare Birthdate Array As Global, As It's Used Elsewhere As Well
-
+  global age
+  
+  while True:
+    try:
+      age = int(input(BLUE+"\nWhat's your age?: "+RESET))
+    except ValueError:
+      print(RED+"\nInvalid Choice!"+RESET)
+    else:
+      if (age <= 0):
+        print(RED+"\nCan't Be Less Than Or Equal To Zero Years!"+RESET)
+      elif (age > 100):
+        print(RED+"\nToo Old"+RESET)
+      else:
+        break
+        
+  
   while True:          # Error-trapped Gaining Of Birth Year (1-2099)
     try:
-      birth[0] = int(input(BLUE+"What's Your Birth Year (YY): "+RESET))  # Check Birth Year And Store It In Index0 Of Array
+      birth[0] = int(input(BLUE+"\nWhat's Your Birth Year (YYYY): "+RESET))  # Check Birth Year And Store It In Index0 Of Array
     except ValueError:
       print(RED+"\nYou Didn't Enter A Valid Month!"+RESET) 
     if (birth[0] <= 0):                                                  # Can't Have Negative Years, Or 0 Years
-      print(RED+"\nToo Low Year"+RESET)
+      print(RED+"\nYear Can't Be Smaller Or Equal To 0"+RESET)
     elif (birth[0] > 2100):                                              # Put A Cap On The Max Year For Birth
       print(RED+"\nYear too Large"+RESET)
     elif (birth[0] > today.year):
       print(RED+"\nYou Can't Be Born In The Future!"+RESET)
-    else:
+    elif (birth[0] <= (today.year - age)-2):
+      print(RED+"\nInvalid Year!"+RESET)
+      print(RED+"You're Born CIRCA:",(today.year - age),"(±1 Year)"+RESET)
+    elif (birth[0] >= (today.year - age)+2):
+      print(RED+"\nInvalid Year!"+RESET)
+      print(RED+"You're Born CIRCA:",(today.year - age),"(±1 Year)"+RESET)
+    else: 
       break                                                              # Continue Logic On Valid Input, Not Caught In Error-Filter
   
   while True:    # Error-Trapped Gaining Of Birth Month
@@ -128,7 +172,7 @@ def getBirthDate():    # Function Attempting To Gain The User's Valid Birthdate
     except ValueError:
       print(RED+"\nYou Didn't Enter A Valid Month!"+RED)     
     if (birth[2] > 12):                                                   # Can't Have More Than 12 Months
-      print(RED+"\nThere Aren't More Than 31 Days In A Month!"+RESET)
+      print(RED+"\nThere Aren't More Than 12 Months In A Year!"+RESET)
     elif (birth[2] <= 0):                                                 # Can't Have Less Than 0 Months Or 0 Months
       print(RED+"\nValue Too Small!"+RESET)
     else:
@@ -136,7 +180,7 @@ def getBirthDate():    # Function Attempting To Gain The User's Valid Birthdate
 
   while True:                                                             # Error-Trapped Gaining Of Birthdate
     try:
-      birth[1] = int(input(BLUE+"\nWhat's Your Birthday (DD): "+RESET))
+      birth[1] = int(input(BLUE+"What's Your Birthday (DD): "+RESET))
     except ValueError:
       print(RED+"\nYou Didn't Enter A Valid Day!"+RESET) 
     if (birth[1] > 31):                                                   # Raise Error When Day Is Greater Than 31 (>31); No Month With 32 Days
@@ -166,14 +210,20 @@ def getBirthDate():    # Function Attempting To Gain The User's Valid Birthdate
           break
     
   print(MAGENTA+"\nEntered Date! (DD/MM/YYYY):",birth[1],"/",birth[2],"/",birth[0],""+RESET)  # Print The User's Entered Date
+  date_time = date(birth[0],birth[2],birth[1])
+  d = date_time.strftime(PURPLE+"\nPretty Print: %A, %d %B, %Y"+RESET)
+  print(d)
 
-def getCurrentDate():    # Function To Gain User's Input For Current Date, While Error Trapping Accecptable YY, MM, And DD Values
+def getCurrentDate(): 
+  '''
+    Function To Gain User's Input For Current Date, While Error Trapping Accecptable YYYY, MM, And DD Values
+  '''
   global current
   
   while True: 
     
     try:                 # Try To Gain User's Selection Of Using Automatic Date Or Manually Enter It
-      currentDate = input(BLUE+"\nUse Current Date? 'y' To Continue, Or 'n' To Manually Enter Date: "+RESET)
+      currentDate = input(YELLOW+"\nUse Current Date? 'y' To Continue, Or 'n' To Manually Enter Date: "+RESET)
     except ValueError:
       print(RED+"\nI Need A Definitive Answer!"+RESET)
     else:
@@ -191,13 +241,15 @@ def getCurrentDate():    # Function To Gain User's Input For Current Date, While
               
         while True:                                       # Trap User In Infinite Loop For Input For Year Value (YY)               
           try:
-            current[0] = int(input(BLUE+"What's Today's Year (YY): "+RESET))
+            current[0] = int(input(BLUE+"\nWhat's Today's Year (YYYY): "+RESET))
           except ValueError:
-            print(RED+"\nYou Didn't Enter A Valid Month!"+RESET) 
+            print(RED+"\nYou Didn't Enter A Valid Year!"+RESET) 
           if (current[0] <= 0):                           # Self-Explanatory, No Year Smaller Than Or Equal To 0
             print(RED+"\nCan't Have Year 0 Or Less"+RESET)
           elif (current[0] < birth[0]):                   # Can't Have A Year Smaller Than Birth Year
             print(RED+"\nCan't have A Year Smaller Than Your Birth Year!"+RESET)
+          elif (current[0] >= 2100):
+            print(RED+"\nInvalid Year (Too Large)"+RESET)
           else:
             break  
       
@@ -247,16 +299,27 @@ def getCurrentDate():    # Function To Gain User's Input For Current Date, While
             
             
   print(MAGENTA+"\nCurrent Date! (DD/MM/YYYY):",current[1],"/",current[2],"/",current[0])  # Print Current Used Date (Current Day)
+  date_time = date(current[0],current[2],current[1])  # Create DateTime Object From Ints
+  d = date_time.strftime(PURPLE+"\nPretty Print: %A, %d %B, %Y"+RESET)  # Create String From Date Object
+  print(d)  # Print Text Date Object
 
 def getDiff(date1, date2):  # Function To Return Time Delta In Days From 2 DateTime Objects (date1, date2)
+  '''
+    Function To Get Difference Between 2 'dateTime' Objects, Taking Arguments Of EndDate - StartDate
+  '''
+  
   delta = date1 - date2
   return delta.days
 
 def getInformation():       # Properly Error-Trapped Function To Gain User Info
+  '''
+    Function To Get User's Personal Information, Taking No Input, Causing Console Window To Prompt For User Info
+  '''
   global birth
   global current
   global name
-  while True:
+  
+  while True:               # Error-Trapped Way To Get User Name As Correct String
     try:
       name = input(BLUE+"What's Your Name?: "+RESET)
     except ValueError:
@@ -271,43 +334,52 @@ def getInformation():       # Properly Error-Trapped Function To Gain User Info
   getCurrentDate()
 
 def breakdown(totalHours):
+  '''
+    Function To Take Argument Of 'TotalHours' -> Total Hours To Break Down Into
+    Different Forms (YYYY,MM,DD,HH,MM,SS) *Note, This Function Doesn't Take Hours
+    And Break Them Individually, But Shows The Hours In A Pretty Print Format
+  '''
+  
   ageBreakdown[0] = totalHours/8760 # Convert TotalHours To Years
   
-  result = math.modf(ageBreakdown[0])  # Split Decimal From Years Calculation And Get Months
+  result = math.modf(ageBreakdown[0])  # Split Decimal From Years Calculation (Remainder) And Get Months
   ageBreakdown[1] = result[0]*12
   
-  result = math.modf(ageBreakdown[1]) # Split Months From Decimal And Convert To Days
+  result = math.modf(ageBreakdown[1]) # Split Months From Decimal And Convert Remainder To Days
   ageBreakdown[2] = result[0]*30.417
 
-  result = math.modf(ageBreakdown[2]) # Split Months From Decimal And Convert To Days
+  result = math.modf(ageBreakdown[2]) # Split Days From Decimal And Convert Remainder To Hours
   ageBreakdown[3] = result[0]*24
 
-  result = math.modf(ageBreakdown[3])
+  result = math.modf(ageBreakdown[3]) # Split Hours From Decimal And Convert Remainder To Minutes
   ageBreakdown[4] = result[0]*60
 
-  result = math.modf(ageBreakdown[4])
+  result = math.modf(ageBreakdown[4]) # Split Minutes From Decimal and Convert Remainder To Seconds
   ageBreakdown[5] = result[0]*60
   
-  print(GREEN+"\nYour Sleep Statistics:"+RESET)
+  print(GREEN+"\nYour Sleep Statistics:"+RESET)  # Print Breakdown Of Time (Consecutive)
   print(YELLOW+"Years:",int(ageBreakdown[0]))
   print("Months:",int(ageBreakdown[1]))
   print("Days:",int(ageBreakdown[2]))
   print("Hours:",int(ageBreakdown[3]))
   print("Minutes:",int(ageBreakdown[4]))
   print("Seconds:",ageBreakdown[5])
+  print("Or,",round(((ageBreakdown[0]/age)*100), 3),"% Of Your Life!")
   
+  
+intro()  # Print Intro Banner
 
 while True:
+  
   getInformation()
-  d1 = date(current[0], current[2], current[1]) # YY/MM/DD
-  d0 = date(birth[0], birth[2], birth[1])       # YY/MM/DD
+  d1 = date(current[0], current[2], current[1])   # YY/MM/DD
+  d0 = date(birth[0], birth[2], birth[1])         # YY/MM/DD
   daysOld = getDiff(d1, d0)
   
   for x in range (birth[0], current[0]):
-    if(x%4 == 0 and x%100 != 0) or (x%400 == 0): 
-      daysOld += 1  
+    if(x%4 == 0 and x%100 != 0) or (x%400 == 0):  # Calculate How Many Leap Years Between The Range Of Birthdate -> Current Date
       numLeapYears += 1
-  print(YELLOW+"\nYou Are:",daysOld,"Days Old! (Including)",numLeapYears,"Leap Years"+RESET)
+  print(YELLOW+"\nYou Are:",daysOld,"Days Old! (Including)",numLeapYears,"Leap Years"+RESET)   # Don't Add Leap Years, Python Timedelta Object Counts This Already!
 
   while True:
     try:
@@ -324,14 +396,14 @@ while True:
         
   while True:
     try:
-      endlyHours = int(input(BLUE+"How Many Hours Do You Average Sleeping Per WEEKEND: "+RESET))
+      endlyHours = int(input(BLUE+"\nHow Many Hours Do You Average Sleeping Per WEEKEND: "+RESET))
     except ValueError:
       print(RED+"\nValues Aren't Optional!"+RESET)
     else:
       if(endlyHours > 24): 
         print(RED+"\nYou Can't Have More Than 24H Of Sleep In A Day..."+RESET)
       elif(endlyHours <= 0):
-        print(RED+"\nYou Can't Have Less Than 0H Of Sleep In A Day..."+RESET)
+        print(RED+"\nYou Can't Have Less Than 1H Of Sleep In A Day..."+RESET)
       else:
         break  
 
@@ -343,6 +415,7 @@ while True:
 
   print(MAGENTA+"\nYou Have Spent",totalWeek+totalEnd,"Hours Sleeping!"+RESET)
   breakdown(totalWeek+totalEnd)
+  sleepScore(age, (weeklyHours + endlyHours)/2)
 
   if(playAgain() == False):
     break
